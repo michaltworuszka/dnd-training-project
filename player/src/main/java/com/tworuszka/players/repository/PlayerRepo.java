@@ -6,9 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * @author Michał Tworuszka on 10.10.2022
+ * @project dnd-training-project
+ */
+
 @Repository
 public interface PlayerRepo extends JpaRepository<Player, Long> {
-    Optional<Player> findByUsernameIgnoreCase(String userName);
+    Optional<Player> findByUsernameIgnoreCase(String username);
 
     long deleteByIsActive(boolean isActive);
 

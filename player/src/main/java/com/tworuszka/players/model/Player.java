@@ -1,13 +1,16 @@
 package com.tworuszka.players.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
@@ -16,13 +19,14 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Player {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -32,6 +36,12 @@ public class Player {
 
     @Column(nullable = false)
     private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "player_role",
+            joinColumns = {@JoinColumn(name = "role_id")},
+            inverseJoinColumns = {@JoinColumn(name = "player_id")})
+    private Collection<Role> roles = new ArrayList<>();
 
     @Column(name = "active", nullable = false)
     private boolean isActive;
@@ -51,12 +61,12 @@ public class Player {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return id == player.id && name.equals(player.name) && username.equals(player.username) && password.equals(player.password);
+        return isActive == player.isActive && id.equals(player.id) && name.equals(player.name) && username.equals(player.username) && password.equals(player.password) && createdAt.equals(player.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, username, password);
+        return Objects.hash(id, name, username, password, isActive, createdAt);
     }
 
     @Override
