@@ -1,14 +1,14 @@
 package com.tworuszka.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Setter
 @Getter
 public class PlayerDTO {

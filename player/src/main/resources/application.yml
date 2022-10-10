@@ -1,5 +1,7 @@
 server:
   port: 8081
+  error:
+    include-stacktrace: never
 
 spring:
   application:
@@ -10,7 +12,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/player
   jpa:
     hibernate:
-      ddl-auto: 'create-drop'
+      ddl-auto: 'update'
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

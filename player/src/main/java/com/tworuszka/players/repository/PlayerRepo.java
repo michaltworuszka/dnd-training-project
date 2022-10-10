@@ -9,4 +9,8 @@ import java.util.Optional;
 @Repository
 public interface PlayerRepo extends JpaRepository<Player, Long> {
     Optional<Player> findByUsernameIgnoreCase(String userName);
+
+    long deleteByIsActive(boolean isActive);
+
+
 }
