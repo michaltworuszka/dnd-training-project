@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
     private final PlayerRepo playerRepository;
     private final RoleRepo roleRepo;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     private PlayerDTO convertToDTO(Player player) {
         return modelMapper.map(player, PlayerDTO.class);
@@ -46,6 +48,7 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
 
             Player player = modelMapper.map(playerDTO, Player.class);
             player.setActive(true);
+            player.setPassword(passwordEncoder.encode(player.getPassword()));
             playerDTO = convertToDTO(playerRepository.save(player));
             log.info("Saving new player {} to database", playerDTO.getUsername());
             return playerDTO;

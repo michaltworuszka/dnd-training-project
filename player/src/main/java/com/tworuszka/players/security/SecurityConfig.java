@@ -1,6 +1,7 @@
 package com.tworuszka.players.security;
 
 import com.tworuszka.players.filter.CustomAuthenticationFilter;
+import com.tworuszka.players.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,11 +9,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 /**
@@ -25,26 +25,25 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    //private final UserDetailsService userDetailsService;
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception { //here we use when declared http.getSharedObject(AuthenticationConfiguration.class in place of AuthConfig
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        CustomAuthenticationFilter filter = new CustomAuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)));
+        //filter.setFilterProcessesUrl("/player/login");
         http.csrf().disable();
-//                sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests().antMatchers("/home").permitAll()
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().anyRequest().permitAll();
-        http.addFilter(new CustomAuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class))));
+        http.authorizeRequests().antMatchers("/login/**").permitAll();
+        http.authorizeRequests().antMatchers(GET, "/player/").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(GET, "/player/{id}").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN");
+        http.authorizeRequests().anyRequest().authenticated();
+        http.addFilter(filter);
+        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 //                .antMatchers("/welcome").authenticated()
 //                .antMatchers("/admin").hasAuthority("ADMIN")
 //                .antMatchers("/emp").hasAuthority("EMPLOYEE")
