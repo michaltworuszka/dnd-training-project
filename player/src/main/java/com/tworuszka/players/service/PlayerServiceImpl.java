@@ -106,6 +106,11 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
     }
 
     @Override
+    public Player findByUsername(String username) {
+        return playerRepository.findByUsernameIgnoreCase(username).orElseThrow(() -> new UsernameNotFoundException(username));
+    }
+
+    @Override
     public Role saveRole(Role role) {
         log.info("Saving new role {} to database", role.getName());
         return roleRepo.save(role);

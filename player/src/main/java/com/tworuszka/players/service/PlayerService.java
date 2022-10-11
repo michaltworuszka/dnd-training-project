@@ -1,6 +1,7 @@
 package com.tworuszka.players.service;
 
 import com.tworuszka.dto.PlayerDTO;
+import com.tworuszka.players.model.Player;
 import com.tworuszka.players.model.Role;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface PlayerService {
     void delete(Long id);
 
     void deleteInactive();
+
+    Player findByUsername(String username);
 }
