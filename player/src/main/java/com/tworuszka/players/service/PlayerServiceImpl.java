@@ -10,9 +10,16 @@ import com.tworuszka.players.repository.RoleRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
-public class PlayerServiceImpl implements PlayerService {
+public class PlayerServiceImpl implements PlayerService, UserDetailsService {
 
     private final PlayerRepo playerRepository;
     private final RoleRepo roleRepo;
@@ -107,5 +114,18 @@ public class PlayerServiceImpl implements PlayerService {
         Role role = roleRepo.findByName(roleName);
         existingPlayer.getRoles().add(role);
         log.info("Adding role {} to player {}", role.getName(), existingPlayer.getUsername());
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Player player = playerRepository.findByUsernameIgnoreCase(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        log.info("User found in the database {}", username);
+
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        player.getRoles()
+                .forEach(role ->
+                        authorities.add(new SimpleGrantedAuthority(role.getName())));
+
+        return new User(player.getUsername(), player.getPassword(), authorities);
     }
 }

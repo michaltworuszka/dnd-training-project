@@ -39,8 +39,8 @@ public class Player {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "player_role",
-            joinColumns = {@JoinColumn(name = "role_id")},
-            inverseJoinColumns = {@JoinColumn(name = "player_id")})
+            joinColumns = {@JoinColumn(name = "player_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Collection<Role> roles = new ArrayList<>();
 
     @Column(name = "active", nullable = false)

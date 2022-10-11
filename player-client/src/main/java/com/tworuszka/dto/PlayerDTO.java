@@ -6,7 +6,9 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Setter
@@ -28,4 +30,7 @@ public class PlayerDTO {
     private String password;
 
     private Date createdAt;
+
+    private List<String> roles = new ArrayList<>();
+
 }

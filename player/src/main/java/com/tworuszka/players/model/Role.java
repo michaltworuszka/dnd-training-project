@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 
 @Entity
@@ -24,9 +22,6 @@ public class Role {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Collection<Player> players = new ArrayList<>();
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,8 +37,6 @@ public class Role {
 
     @Override
     public String toString() {
-        return "Role{" +
-                "players=" + players +
-                '}';
+        return "Role name='" + name + '\'';
     }
 }
